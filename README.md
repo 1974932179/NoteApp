@@ -73,3 +73,24 @@ docker compose up --build
 ```
 
 A plain `docker compose up` would keep running the old image.
+
+
+## Project 1: threat model (group contribution)
+
+| Part | Material in this fork |
+|---|---|
+| 1. Numbered data-flow diagram and every trust boundary | The complete group diagram is held by another group member and still needs to be merged into the final hand-in repository. [Flow_List.md](Flow_List.md) provides the F01–F44 numbering reference. |
+| 2. STRIDE table | [threat.md](threat.md): TH01–TH17, covering all six categories. |
+| 3. Likelihood × impact ratings | [Risk_Assessment.md](Risk_Assessment.md): scale, scores and reasons for every threat. |
+| 4. Top three risks and a fix for each | [Top3_Risks_and_Fixes.md](Top3_Risks_and_Fixes.md): TH01, TH02 and TH03, with proposed fixes and acceptance checks. |
+
+The course asks for a group submission on GitHub before 20 October and a
+3-minute group presentation that day (Session 03, page 31). Choose one repository
+for the complete hand-in and merge the diagram there. This fork currently contains
+the written contribution, not the full four-part submission.
+
+The application remains the original teaching baseline. Fixes in the report are
+proposals, not implemented changes. The review uses source inspection; it does not
+claim new exploit or load-test results. AI assistance for review, proposed ratings
+and wording is disclosed in the reports. Local drafts, test traces and editor
+files are excluded from version control.

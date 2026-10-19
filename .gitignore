@@ -12,3 +12,29 @@ venv/
 # Local env overrides
 .env
 .env.local
+
+
+# Editor and local tooling
+.idea/
+.vscode/
+.codex/
+.agents/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.DS_Store
+Thumbs.db
+
+# Local analysis, raw test evidence and superseded working drafts
+/teacher-review/
+/project1-stride.md
+/flow.md
+/flow_teacher.md
+/teacher-flow-list.md
+/teacher-flow.drawio
+/teacher-flow.svg
+/teacher-flow.png
+/tmp/
+*.log
+*.tmp
+*.bak
