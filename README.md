@@ -1,3 +1,6 @@
+# Name:Siyuan Wu 吴思远
+# StudentID: 2023905932
+
 # NotesApp
 
 A small grades application used throughout the Computer Security course. Teachers
