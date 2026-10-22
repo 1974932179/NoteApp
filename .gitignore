@@ -38,3 +38,9 @@ Thumbs.db
 *.log
 *.tmp
 *.bak
+
+# Local HMAC exercise: private key and exported grade data
+/hmac.key
+/grades.csv
+/grades_signed.csv
+/grades_tampered.csv
