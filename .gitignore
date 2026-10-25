@@ -48,3 +48,4 @@ Thumbs.db
 # Local password-audit output and TLS private keys
 /crack/leaked_users.txt
 /nginx/certs/
+/secrets/
