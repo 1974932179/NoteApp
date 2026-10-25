@@ -82,18 +82,36 @@ A plain `docker compose up` would keep running the old image.
 
 | Part | Material in this fork |
 |---|---|
-| 1. Numbered data-flow diagram and every trust boundary | The complete group diagram is held by another group member and still needs to be merged into the final hand-in repository. [Flow_List.md](Flow_List.md) provides the F01–F44 numbering reference. |
+| 1. Numbered data-flow diagram and every trust boundary | [Group diagram](flow_img.jpg), with [Flow_List.md](Flow_List.md) as the F01–F44 numbering reference. |
 | 2. STRIDE table | [threat.md](threat.md): TH01–TH17, covering all six categories. |
 | 3. Likelihood × impact ratings | [Risk_Assessment.md](Risk_Assessment.md): scale, scores and reasons for every threat. |
 | 4. Top three risks and a fix for each | [Top3_Risks_and_Fixes.md](Top3_Risks_and_Fixes.md): TH01, TH02 and TH03, with proposed fixes and acceptance checks. |
 
 The course asks for a group submission on GitHub before 20 October and a
-3-minute group presentation that day (Session 03, page 31). Choose one repository
-for the complete hand-in and merge the diagram there. This fork currently contains
-the written contribution, not the full four-part submission.
+3-minute group presentation that day (Session 03, page 31). The four deliverable
+files are now present in this fork.
 
-The application remains the original teaching baseline. Fixes in the report are
-proposals, not implemented changes. The review uses source inspection; it does not
-claim new exploit or load-test results. AI assistance for review, proposed ratings
-and wording is disclosed in the reports. Local drafts, test traces and editor
-files are excluded from version control.
+The Project 1 reports describe the original teaching baseline and proposed fixes.
+Later lab changes and their measured results are documented separately below.
+AI assistance for review, proposed ratings and wording is disclosed in the reports.
+Local drafts, private keys and editor files are excluded from version control.
+
+## Class 5: HTTPS and password storage
+
+[Combined report and screenshots](reports/class5/NotesApp_Class5_Report.md)
+cover the HTTP/HTTPS comparison, certificate trust, MD5 wordlist experiment and
+Argon2id migration. [Password experiment instructions](crack/README.md) explain
+how to repeat the local scripts and benchmark.
+
+For the HTTPS lab, generate a local certificate once from the NoteApp folder:
+
+```powershell
+New-Item -ItemType Directory -Force nginx/certs
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx/certs/notesapp.key -out nginx/certs/notesapp.crt -subj "/CN=localhost"
+docker compose -f docker-compose.yml -f docker-compose.https.yml up -d --build
+```
+
+Open `https://localhost`. The certificate is self-signed for this local lab.
+The HTTPS override removes the web service's published port 8080. Existing
+plaintext passwords are upgraded to Argon2id after a correct login; subsequent
+logins verify the stored hash. Other planted flaws remain for later classes.

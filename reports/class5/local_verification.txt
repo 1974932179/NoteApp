@@ -1,0 +1,45 @@
+NOTESAPP PASSWORD AUDIT - LOCAL VERIFICATION
+Date: 22 October 2026
+Local app checks recorded at UTC: 2026-10-22T11:46:32.136414+00:00
+
+MD5 PUBLIC-WORDLIST REPEAT
+cracked 4 / 6 in 0.175 ms
+  liwei : 123456
+  aisha : password1
+  tomk : qwerty123
+  sofia : iloveyou
+
+STORAGE AND LOGIN CHECKS
+PASS: Alice exists in the local NotesApp database
+PASS: Wrong Alice password rejected
+PASS: Failed login leaves stored password unchanged
+PASS: Alice correct login succeeds
+PASS: Alice password is stored as a valid Argon2id hash
+PASS: Authenticated Alice can open the dashboard
+PASS: Alice can log out and log in again using the Argon2 branch
+PASS: Second login verifies the existing hash without replacing it
+PASS: Wrong Alice password is also rejected after migration
+PASS: Legacy account is not upgraded after an incorrect password
+PASS: Legacy plaintext account automatically upgrades on a correct login
+PASS: Malformed Argon2 hash is rejected without a server error
+PASS: Unknown user is rejected
+Alice migrated during this test: yes
+Stored hash parameters: $argon2id$v=19$m=65536,t=3,p=4
+Temporary fixture removed: yes
+
+HTTPS END-TO-END CHECKS
+PASS: Login page reachable through nginx HTTPS
+PASS: Alice login through HTTPS succeeds and reaches the dashboard
+PASS: Alice logout and subsequent HTTPS login succeed
+Certificate handling: Disabled only for this self-signed localhost lab certificate
+
+LOCAL SPEED REPEAT - SEPARATE FROM THE SUPPLIED SCREENSHOT
+MD5    : 2,982,587 guesses/second
+Argon2 : 59.6 ms for ONE guess (16.8 guesses/second)
+MD5/day: 257,695,498,945
+Argon2/day: 1,450,068
+Argon2 is about 177,713 times slower per guess.
+Single-process lab estimate; not a measurement of a GPU cracking rig.
+
+The benchmark prints rounded rates. Its day and ratio output uses the original unrounded timings.
+No existing database volume was deleted. Alice remains migrated after testing.
