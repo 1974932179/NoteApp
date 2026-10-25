@@ -96,6 +96,13 @@ Later lab changes and their measured results are documented separately below.
 AI assistance for review, proposed ratings and wording is disclosed in the reports.
 Local drafts, private keys and editor files are excluded from version control.
 
+## Class 4: CSV integrity with HMAC
+
+`hmac_csv.py` signs a local `grades.csv`; `verify_csv.py` checks the resulting
+`grades_signed.csv`. The [HMAC verification report](reports/hmac/HMAC_Verification.md)
+records acceptance of the original export, rejection after a grade edit, and
+acceptance after restoring the original bytes. Keys and exported grades stay local.
+
 ## Class 5: HTTPS and password storage
 
 [Combined report and screenshots](reports/class5/NotesApp_Class5_Report.md)
