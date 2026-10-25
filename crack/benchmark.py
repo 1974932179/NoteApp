@@ -1,4 +1,3 @@
-"""Class 5 comparison: run inside the web container, where Argon2 is installed."""
 import hashlib
 import time
 

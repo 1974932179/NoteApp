@@ -1,7 +1,5 @@
 services:
   web:
-    # Compose MERGES ports across files, so clear the base 8080 explicitly -
-    # otherwise the app stays reachable over plain HTTP and the fix is pointless.
     ports: !reset []
     expose:
       - "5000"

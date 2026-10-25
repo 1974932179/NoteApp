@@ -175,7 +175,6 @@ def login():
                 except (VerificationError, InvalidHashError):
                     authenticated = False
             elif stored == password:
-                # Upgrade a legacy plaintext account only after a correct login.
                 new_hash = ph.hash(password)
                 cur.execute(
                     "UPDATE users SET password = %s WHERE id = %s",

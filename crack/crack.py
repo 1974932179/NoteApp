@@ -2,11 +2,11 @@ import hashlib, time
 from pathlib import Path
 
 def load_dump(path):
-    # read the leaked file into {username: md5_digest}
+
     out = {}
     with open(path, encoding="utf-8") as f:
         for line in f:
-            u, d = line.strip().split(":")   # each line is "username:digest"
+            u, d = line.strip().split(":")
             out[u] = d
     return out
 
@@ -17,14 +17,14 @@ with (folder / "wordlist.txt").open(encoding="utf-8-sig") as f:
 
 start = time.perf_counter()
 cracked = {}
-for candidate in wordlist:                       # for each guess in the wordlist...
-    cd = hashlib.md5(candidate.encode()).hexdigest()   # hash the guess the SAME way the app did
-    for u, d in accounts.items():                # ...compare it to every leaked digest
-        if u not in cracked and d == cd:         # same digest => that guess IS the password
+for candidate in wordlist:
+    cd = hashlib.md5(candidate.encode()).hexdigest()
+    for u, d in accounts.items():
+        if u not in cracked and d == cd:
             cracked[u] = candidate
 elapsed = time.perf_counter() - start
 
-# the attack never "reverses" a hash - it just hashes guesses until one matches.
+
 print(f"cracked {len(cracked)} / {len(accounts)} in {elapsed*1000:.3f} ms")
 for u, p in cracked.items():
     print(f"  {u} : {p}")

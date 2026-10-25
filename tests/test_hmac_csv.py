@@ -1,4 +1,3 @@
-"""Black-box checks of the CSV signing and verification scripts."""
 from pathlib import Path
 import os
 import subprocess
@@ -39,7 +38,7 @@ class HmacCsvTests(unittest.TestCase):
         self.assertEqual(changed.rpartition(b"\n# HMAC: ")[2],
                          original.rpartition(b"\n# HMAC: ")[2])
         signed.write_bytes(changed)
-        # The existing verifier reports its verdict on stdout.
+
         self.assertEqual(self.run_script("verify_csv.py"), "CHECK FAILED")
         signed.write_bytes(original)
         self.assertEqual(self.run_script("verify_csv.py"), "CHECK PASSED")
