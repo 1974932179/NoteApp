@@ -12,17 +12,14 @@ admin manages users and classes.
 You need Docker with the Compose plugin.
 
 ```
-git clone git@github.com:KristenPire/NoteApp.git notesapp
+git clone https://github.com/1974932179/NoteApp.git notesapp
 cd notesapp
-docker compose up
 ```
 
-The first start builds the image, launches PostgreSQL, and loads the seed data
-automatically. When it is ready, open:
-
-```
-http://localhost:8080
-```
+For this fork, follow the AES-GCM setup below and generate the local HTTPS
+certificate using the command in the Class 5 section. Then open
+`https://localhost`. PostgreSQL loads the seed data on its first start;
+the migration encrypts its plaintext comments before the web service starts.
 
 ## Test accounts
 
@@ -45,8 +42,11 @@ e.g. `bob` / `bobpw`.)
 
 ```
 docker compose down -v   # wipes the database volume
-docker compose up        # reloads the seed data
 ```
+
+After a reset, repeat the database startup, build, migration and HTTPS startup
+commands in the AES-GCM section. Keep the existing key if any encrypted data
+or database backups still need to be read.
 
 ## Updating your fork
 
@@ -95,6 +95,52 @@ The Project 1 reports describe the original teaching baseline and proposed fixes
 Later lab changes and their measured results are documented separately below.
 AI assistance for review, proposed ratings and wording is disclosed in the reports.
 Local drafts, private keys and editor files are excluded from version control.
+
+## Session 3: AES-GCM comment storage
+
+Comments are encrypted before insertion or update and decrypted for the teacher
+page, student page, note API and CSV export. The database stores
+`aesgcm:v1:` followed by Base64 of a 12-byte nonce, ciphertext and a 16-byte
+authentication tag. The key is 32 random bytes; the authenticated context is
+`notes.comment:v1`. Each encryption generates a fresh nonce.
+
+For a new clone, create a local key once from the NoteApp folder:
+
+```powershell
+New-Item -ItemType Directory -Force secrets
+python -c "from pathlib import Path; import secrets; p=Path('secrets/comment.key'); f=p.open('xb'); f.write(secrets.token_bytes(32)); f.close(); print('Key created')"
+```
+
+The command refuses to overwrite an existing key. Keep this key for the lifetime
+of the encrypted data. It is ignored by Git and mounted as
+`/run/secrets/comment_key`; it is not part of the web image. An existing encrypted
+database requires its original key, not a newly generated one.
+
+After generating the HTTPS certificate described below, run:
+
+```powershell
+docker compose -f docker-compose.yml -f docker-compose.https.yml stop nginx web
+docker compose -f docker-compose.yml -f docker-compose.https.yml up -d --wait db
+docker compose -f docker-compose.yml -f docker-compose.https.yml build web
+docker compose -f docker-compose.yml -f docker-compose.https.yml run --rm --no-deps web python migrate_comments.py
+docker compose -f docker-compose.yml -f docker-compose.https.yml up -d
+```
+
+Back up an existing database before migration. The migration commits all changes
+together, rolls back on failure and validates already encrypted comments before
+skipping them. Repeating it after a successful migration reports zero migrated
+comments.
+
+Run the encryption checks with:
+
+```powershell
+docker compose -f docker-compose.yml -f docker-compose.https.yml exec -T web python /host/tests/test_comment_crypto.py
+```
+
+The tests cover Unicode round trips, different ciphertexts for repeated input,
+empty and NULL comments, tamper rejection and plaintext rejection. Exported CSV
+files contain readable comments. Existing authorization flaws remain part of the
+teaching application; comment encryption does not fix them.
 
 ## Class 4: CSV integrity with HMAC
 
