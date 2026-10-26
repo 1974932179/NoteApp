@@ -12,11 +12,12 @@ import time
 import base64
 import hashlib
 import subprocess
-
 import psycopg2
 import psycopg2.extras
+
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerificationError
+from comment_crypto import encrypt_comment, decrypt_comment
 from flask import (
     Flask, request, session, redirect, url_for,
     render_template, Response, jsonify, abort,
@@ -219,6 +220,10 @@ def dashboard():
     )
     notes = cur.fetchall()
     conn.close()
+
+    for note in notes:
+        note["comment"] = decrypt_comment(note["comment"])
+
     return render_template("dashboard.html", notes=notes, token=session.get("token"))
 
 
@@ -240,8 +245,11 @@ def api_notes(note_id):
     )
     note = cur.fetchone()
     conn.close()
+
     if not note:
         return jsonify({"error": "not found"}), 404
+
+    note["comment"] = decrypt_comment(note["comment"])
     note["grade"] = float(note["grade"]) if note["grade"] is not None else None
     return jsonify(note)
 
@@ -265,6 +273,10 @@ def teacher():
     cur.execute("SELECT id, username FROM users WHERE role = 'student' ORDER BY username")
     students = cur.fetchall()
     conn.close()
+
+    for note in notes:
+        note["comment"] = decrypt_comment(note["comment"])
+
     return render_template("teacher.html", classes=classes, notes=notes, students=students)
 
 
@@ -277,7 +289,7 @@ def grades():
     student_id = request.form.get("student_id")
     class_id = request.form.get("class_id")
     grade = request.form.get("grade")
-    comment = request.form.get("comment", "")
+    comment = encrypt_comment(request.form.get("comment", ""))
     conn = get_db()
     cur = conn.cursor()
     if note_id:
@@ -323,7 +335,12 @@ def export_csv():
     writer = csv.writer(buf)
     writer.writerow(["student", "class", "grade", "comment"])
     for r in rows:
-        writer.writerow([r["student"], r["class"], r["grade"], r["comment"]])
+        writer.writerow([
+            r["student"],
+            r["class"],
+            r["grade"],
+            decrypt_comment(r["comment"]),
+        ])
     return Response(
         buf.getvalue(), mimetype="text/csv",
         headers={"Content-Disposition": "attachment; filename=grades.csv"},
