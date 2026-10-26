@@ -8,6 +8,8 @@
 
 **Date:** 22 October 2026
 
+**HTTPS evidence rechecked:** 26 October 2026
+
 ## Lab 1 — HTTP, HTTPS and certificate trust
 
 ### Finding 1 — Login over plain HTTP
@@ -33,11 +35,33 @@ Packet **190** returned `302 FOUND`, followed by a request to `/dashboard`.
 
 For `https://localhost`, the capture shows traffic on port **443**. With `tcp.stream eq 30`, packet **86** is displayed as TLS **Application Data**. Its payload contains encrypted bytes rather than a readable HTTP form.
 
-**Password readable?** No plaintext username or password is visible in the displayed TLS payload. This packet view shows encryption on the observed connection; it does not document a full-stream password search or verify closure of port 8080.
+**Password readable?** No plaintext username or password is visible in the displayed TLS payload. We also repeated the login capture on 26 October and inspected the entire TCP conversation, as described below.
 
 ![Encrypted HTTPS application data](https_application_data.png)
 
 *Figure 2. TLS application data in the HTTPS capture.*
+
+The follow-up capture, `https_login_capture.pcapng`, contains TCP stream **25**
+between local ports **52397** and **443**. Follow TCP Stream displays a nonempty
+ASCII view of approximately **17 kB**. Some handshake metadata, including
+`localhost`, remains readable; the login form is not visible as plaintext.
+
+![HTTPS TCP conversation in ASCII](https_tcp_stream.png)
+
+*Figure 2b. Follow TCP Stream for stream 25, showing actual captured bytes.*
+
+A separate TShark check reassembled both directions of this stream: **41 packets**,
+with **8,140** and **9,136** payload bytes, respectively. Searches for `username=`,
+`password=` and the test password `alicepw` found no matches. We extended this
+search to both port-443 TCP streams in the capture (**24** and **25**), totaling
+**20,437 payload bytes**, with no matches in either direction. We used Follow TCP
+Stream to view the encrypted bytes; Follow TLS Stream requires decryption keys
+to display decrypted application data. No TLS decryption keys were supplied.
+The local recheck also confirmed
+that HTTP redirects to HTTPS, the HTTPS login page returns 200, and direct port
+8080 connections fail on both IPv4 and IPv6. The HTTPS page check disabled
+certificate validation for the self-signed lab certificate; it is not a public
+certificate-trust check. Details are recorded in `local_verification.txt`.
 
 ### Finding 2 — Certificate trust
 

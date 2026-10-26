@@ -156,6 +156,11 @@ cover the HTTP/HTTPS comparison, certificate trust, MD5 wordlist experiment and
 Argon2id migration. [Password experiment instructions](crack/README.md) explain
 how to repeat the local scripts and benchmark.
 
+The HTTPS re-test includes a [TCP stream screenshot](reports/class5/https_tcp_stream.png)
+and [verification results](reports/class5/local_verification.txt). The 26 October
+recheck searched both captured HTTPS connections for plaintext login fields and
+confirmed the HTTP redirect and closure of the direct port 8080 entry point.
+
 For the HTTPS lab, generate a local certificate once from the NoteApp folder:
 
 ```powershell

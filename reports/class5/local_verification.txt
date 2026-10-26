@@ -43,3 +43,29 @@ Single-process lab estimate; not a measurement of a GPU cracking rig.
 
 The benchmark prints rounded rates. Its day and ratio output uses the original unrounded timings.
 No existing database volume was deleted. Alice remains migrated after testing.
+
+HTTPS CAPTURE RECHECK - 26 OCTOBER 2026
+Source capture: https_login_capture.pcapng (kept locally under tmp/)
+TCP stream: 25; local ports 52397 and 443
+TShark follow,tcp,raw,25 reassembled each direction before searching.
+Packets in stream: 41
+Direction 0 payload: 8140 bytes
+Direction 1 payload: 9136 bytes
+Total reassembled payload: 17276 bytes
+Search username=: NOT FOUND
+Search password=: NOT FOUND
+Search alicepw: NOT FOUND
+TLS decryption keys were not supplied.
+Screenshot: https_tcp_stream.png; entire conversation, ASCII, approximately 17 kB
+PASS: HTTP /login redirects to HTTPS
+PASS: HTTPS /login returns 200
+PASS: Direct port 8080 connection refused on IPv4 and IPv6
+The HTTPS reachability check disabled certificate validation for the local self-signed certificate.
+Source capture SHA-256: d52cbe04455d064359aa786abce6b1b98dca42c64d119a3ec61bc5fa9e16091e
+
+FULL HTTPS CAPTURE SEARCH - 26 OCTOBER 2026
+All TCP streams involving port 443 were enumerated and reassembled by direction.
+Stream 24: 3161 payload bytes; no username=, password= or alicepw matches.
+Stream 25: 17276 payload bytes; no username=, password= or alicepw matches.
+Total searched payload across both streams: 20437 bytes.
+Scope: captured bytes only; no TLS decryption keys were provided.
