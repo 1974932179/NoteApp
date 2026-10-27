@@ -173,3 +173,10 @@ Open `https://localhost`. The certificate is self-signed for this local lab.
 The HTTPS override removes the web service's published port 8080. Existing
 plaintext passwords are upgraded to Argon2id after a correct login; subsequent
 logins verify the stored hash. Other planted flaws remain for later classes.
+
+## Class 6: JWT forgery
+
+[Part 1 finding and screenshot](reports/class6/JWT_Forgery_Report.md) record an
+unsigned forged JWT reading Bob's note, while the request without a token returns
+401. Part 2, guessing the HS256 signing secret, has not yet been tested. The
+authentication flaws remain in place for the course exercise.
