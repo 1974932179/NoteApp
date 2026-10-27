@@ -15,6 +15,10 @@ class HmacCsvTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory(prefix="notesapp-hmac-")
         self.addCleanup(self.temp.cleanup)
         self.folder = Path(self.temp.name)
+        (self.folder / ".env").write_text(
+            "HMAC_KEY=" + "ab" * 32 + "\n",
+            encoding="utf-8",
+        )
         (self.folder / "grades.csv").write_bytes(CSV)
         self.run_script("hmac_csv.py")
 

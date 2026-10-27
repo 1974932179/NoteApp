@@ -149,6 +149,11 @@ teaching application; comment encryption does not fix them.
 records acceptance of the original export, rejection after a grade edit, and
 acceptance after restoring the original bytes. Keys and exported grades stay local.
 
+HMAC scripts read `HMAC_KEY` from the local `.env` file as a 64-character
+hexadecimal value representing a 32-byte key. Install dependencies with
+`python -m pip install -r requirements-hmac.txt`. The real `.env` is excluded
+from Git; `.env.example` contains only the variable name.
+
 ## Class 5: HTTPS and password storage
 
 [Combined report and screenshots](reports/class5/NotesApp_Class5_Report.md)

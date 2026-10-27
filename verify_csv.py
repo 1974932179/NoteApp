@@ -2,9 +2,19 @@ from pathlib import Path
 import hashlib
 import hmac
 
-content = Path("grades_signed.csv").read_bytes()
-key = Path("hmac.key").read_bytes()
+from dotenv import dotenv_values
 
+key_hex = dotenv_values(".env").get("HMAC_KEY")
+
+if not key_hex:
+    raise ValueError("HMAC_KEY is missing from .env")
+
+key = bytes.fromhex(key_hex)
+
+if len(key) != 32:
+    raise ValueError("HMAC_KEY must represent 32 bytes")
+
+content = Path("grades_signed.csv").read_bytes()
 data, separator, saved_tag = content.rpartition(b"\n# HMAC: ")
 
 if not separator:
