@@ -181,7 +181,15 @@ logins verify the stored hash. Other planted flaws remain for later classes.
 
 ## Class 6: JWT forgery
 
-[Part 1 finding and screenshot](reports/class6/JWT_Forgery_Report.md) record an
-unsigned forged JWT reading Bob's note, while the request without a token returns
-401. Part 2, guessing the HS256 signing secret, has not yet been tested. The
-authentication flaws remain in place for the course exercise.
+[Part 1 and Part 2 findings](reports/class6/JWT_Forgery_Report.md)
+document unsigned and weak-secret JWT forgery against the original vulnerable
+application, before the Class 7 fixes.
+
+## Class 7: Login fix
+
+[Fix summary and verification screenshots](reports/class7/Login_Fix_Report.md)
+document rejection of unsigned and old-secret tokens, while a real Alice
+login still succeeds.
+
+The JWT secret in Compose is for this classroom exercise only. In production,
+it should come from a secrets store and never from a committed file.

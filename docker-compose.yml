@@ -23,7 +23,7 @@ services:
       DB_NAME: notesapp
       DB_USER: notesapp
       POSTGRES_PASSWORD: notesapp_pg_pw_2024
-      JWT_SECRET: s3cr3t
+      JWT_SECRET: yojrw1SL21iBljffPHkAGsfNeuT91Fr-z4qgsXGUW7Q
       SECRET_KEY: dev-session-key
       COMMENT_KEY_FILE: /run/secrets/comment_key
 
