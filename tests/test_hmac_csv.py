@@ -22,12 +22,13 @@ class HmacCsvTests(unittest.TestCase):
         (self.folder / "grades.csv").write_bytes(CSV)
         self.run_script("hmac_csv.py")
 
-    def run_script(self, name):
+    def run_script(self, name, expected_exit=0):
         result = subprocess.run(
             [sys.executable, str(REPO / name)], cwd=self.folder,
             env={**os.environ, "PYTHONIOENCODING": "utf-8"},
-            capture_output=True, text=True, encoding="utf-8", check=True,
+            capture_output=True, text=True, encoding="utf-8",
         )
+        self.assertEqual(result.returncode, expected_exit, result.stderr)
         return result.stdout.strip()
 
     def test_original_csv_passes(self):
@@ -43,7 +44,7 @@ class HmacCsvTests(unittest.TestCase):
                          original.rpartition(b"\n# HMAC: ")[2])
         signed.write_bytes(changed)
 
-        self.assertEqual(self.run_script("verify_csv.py"), "CHECK FAILED")
+        self.assertEqual(self.run_script("verify_csv.py", expected_exit=1), "CHECK FAILED")
         signed.write_bytes(original)
         self.assertEqual(self.run_script("verify_csv.py"), "CHECK PASSED")
 

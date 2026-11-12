@@ -1,23 +1,11 @@
 from pathlib import Path
-import hmac
-import hashlib
 
 from dotenv import dotenv_values
 
-key_hex = dotenv_values(".env").get("HMAC_KEY")
+from web.csv_integrity import HMAC_FOOTER, parse_hmac_key, sign_csv
 
-if not key_hex:
-    raise ValueError("HMAC_KEY is missing from .env")
-
-key = bytes.fromhex(key_hex)
-
-if len(key) != 32:
-    raise ValueError("HMAC_KEY must represent 32 bytes")
-
+key = parse_hmac_key(dotenv_values(".env").get("HMAC_KEY"))
 data = Path("grades.csv").read_bytes()
-
-tag = hmac.new(key, data, hashlib.sha256).hexdigest()
-print("HMAC:", tag)
-
-footer = f"\n# HMAC: {tag}\n".encode("ascii")
-Path("grades_signed.csv").write_bytes(data + footer)
+signed = sign_csv(data, key)
+Path("grades_signed.csv").write_bytes(signed)
+print("HMAC:", signed.rpartition(HMAC_FOOTER)[2].decode("ascii").rstrip())
