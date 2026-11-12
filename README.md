@@ -144,15 +144,28 @@ teaching application; comment encryption does not fix them.
 
 ## Class 4: CSV integrity with HMAC
 
-`hmac_csv.py` signs a local `grades.csv`; `verify_csv.py` checks the resulting
-`grades_signed.csv`. The [HMAC verification report](reports/hmac/HMAC_Verification.md)
-records acceptance of the original export, rejection after a grade edit, and
-acceptance after restoring the original bytes. Keys and exported grades stay local.
+The teacher page's **export CSV** action downloads `grades_signed.csv`. NoteApp
+computes HMAC-SHA256 over the UTF-8 CSV bytes and appends a `# HMAC:` line before
+sending the response. Both a single-class export and a full export use this format.
 
-HMAC scripts read `HMAC_KEY` from the local `.env` file as a 64-character
-hexadecimal value representing a 32-byte key. Install dependencies with
-`python -m pip install -r requirements-hmac.txt`. The real `.env` is excluded
-from Git; `.env.example` contains only the variable name.
+1. Set `HMAC_KEY` in the local `.env` to a 64-character hexadecimal value that
+   represents a 32-byte key. To generate a new key, run
+   `python -c "import secrets; print(secrets.token_hex(32))"`. Keep `.env` private.
+2. Rebuild the web service with `docker compose up -d --build web`. For the HTTPS
+   setup, run `docker compose -f docker-compose.yml -f docker-compose.https.yml up -d --build web`.
+   Compose passes `HMAC_KEY` to NoteApp. An absent or invalid key returns HTTP 503
+   on export.
+3. Download the CSV and place it in the repository root as `grades_signed.csv`.
+   Install the verifier dependency with `python -m pip install -r requirements-hmac.txt`,
+   then run `python verify_csv.py` with the same key in `.env`.
+
+The verifier checks the downloaded bytes before the HMAC footer. A valid file
+prints `CHECK PASSED` and exits with code 0. Changing a grade while retaining the
+original tag prints `CHECK FAILED` and exits with code 1. `hmac_csv.py` is also
+available to sign a separate local `grades.csv` with the same format.
+
+See the [HMAC verification report](reports/hmac/HMAC_Verification.md) for the
+offline checks and the web export regression test.
 
 ## Class 5: HTTPS and password storage
 

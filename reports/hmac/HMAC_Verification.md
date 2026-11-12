@@ -30,3 +30,21 @@ python -m unittest discover -s tests -p test_hmac_csv.py -v
 ```
 
 Test code: [test_hmac_csv.py](../../tests/test_hmac_csv.py).
+
+## Web export verification
+
+The teacher export now signs the CSV bytes inside `/export.csv` before returning
+`grades_signed.csv`. The existing verifier reads that download directly using
+the same `HMAC_KEY`.
+
+The regression test uses the actual Flask route, a test session, a fictional
+grade from a simulated database, and temporary keys. It exercises both full and
+class-filtered downloads, and runs `verify_csv.py` on the response bytes.
+
+| Check | Result |
+| --- | --- |
+| Original download | HTTP 200, `CHECK PASSED`, exit code 0 |
+| Grade changed with the original HMAC retained | `CHECK FAILED`, exit code 1 |
+| Export with an absent or invalid key | HTTP 503 |
+
+Test code: [test_csv_export.py](../../tests/test_csv_export.py).
