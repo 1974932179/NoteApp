@@ -18,6 +18,7 @@ import psycopg2.extras
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerificationError
 from comment_crypto import encrypt_comment, decrypt_comment
+from csv_integrity import parse_hmac_key, sign_csv
 from flask import (
     Flask, request, session, redirect, url_for,
     render_template, Response, jsonify, abort,
@@ -310,6 +311,10 @@ def grades():
 def export_csv():
     if not login_required("teacher"):
         return redirect(url_for("login"))
+    try:
+        key = parse_hmac_key(os.environ.get("HMAC_KEY"))
+    except ValueError as exc:
+        abort(503, description=f"Signed CSV export is unavailable: {exc}.")
     class_id = request.args.get("class_id")
     conn = get_db()
     cur = conn.cursor()
@@ -339,9 +344,10 @@ def export_csv():
             r["grade"],
             decrypt_comment(r["comment"]),
         ])
+    data = buf.getvalue().encode("utf-8")
     return Response(
-        buf.getvalue(), mimetype="text/csv",
-        headers={"Content-Disposition": "attachment; filename=grades.csv"},
+        sign_csv(data, key), mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=grades_signed.csv"},
     )
 
 

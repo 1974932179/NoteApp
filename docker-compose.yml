@@ -26,6 +26,7 @@ services:
       JWT_SECRET: yojrw1SL21iBljffPHkAGsfNeuT91Fr-z4qgsXGUW7Q
       SECRET_KEY: dev-session-key
       COMMENT_KEY_FILE: /run/secrets/comment_key
+      HMAC_KEY: "${HMAC_KEY:-}"
 
     secrets:
       - comment_key
