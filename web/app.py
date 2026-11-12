@@ -235,6 +235,7 @@ def api_notes(note_id):
     cur = conn.cursor()
     # Flaw #7 (IDOR): the owner of the note is never checked. Any authenticated
     # caller can read any note id. Flaw #4: `ident` may come from a forged token.
+    # Fetch the note and its owner for the authorization check below.
     cur.execute(
         "SELECT n.id, n.student_id, n.class_id, n.grade, n.comment, "
         "u.username AS student, c.name AS class_name "
@@ -246,6 +247,12 @@ def api_notes(note_id):
     conn.close()
 
     if not note:
+        return jsonify({"error": "not found"}), 404
+
+    is_owner = note["student_id"] == ident["user_id"]
+    is_staff = ident.get("role") in ("teacher", "admin")
+
+    if not is_owner and not is_staff:
         return jsonify({"error": "not found"}), 404
 
     note["comment"] = decrypt_comment(note["comment"])
