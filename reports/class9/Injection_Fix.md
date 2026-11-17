@@ -4,7 +4,7 @@
 
 **Test date:** 17 November 2026
 
-**Fix commit:** `<commit-hash>` (`Parameterise the login query; remove shell=True from admin ping`)
+**Fix commit:** `bed69b0` (`Parameterise the login query; remove shell=True from admin ping`)
 
 ## Before the fix
 
