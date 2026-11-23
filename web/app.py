@@ -14,6 +14,7 @@ import hashlib
 import subprocess
 import psycopg2
 import psycopg2.extras
+import secrets
 
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerificationError
@@ -35,6 +36,33 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "dev-session-key")
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+
+
+def csrf_token():
+    if "csrf" not in session:
+        session["csrf"] = secrets.token_urlsafe(32)
+    return session["csrf"]
+
+
+app.jinja_env.globals["csrf_token"] = csrf_token
+
+
+@app.before_request
+def check_csrf():
+    if request.method != "POST" or request.endpoint == "login":
+        return
+
+    expected = session.get("csrf")
+    submitted = request.form.get("csrf_token", "")
+    if (
+        not expected
+        or not submitted.isascii()
+        or not hmac.compare_digest(submitted, expected)
+    ):
+        abort(400, "CSRF token missing or wrong")
+
+
 ph = PasswordHasher()
 
 
